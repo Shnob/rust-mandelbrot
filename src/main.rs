@@ -3,7 +3,7 @@ use std::time::Instant;
 
 fn main() {
     let mut img = RgbImage::new(800, 800);
-    const MAX: u32 = 1000;
+    const MAX: u32 = 10000;
 
     let start_time = Instant::now();
 
@@ -34,7 +34,7 @@ fn main() {
 
     let time_elapsed = start_time.elapsed();
 
-    println!("Time taken: {}ms", time_elapsed.as_millis());
+    println!("Single-thread:\n\tMax Samples: {}\n\tTime taken: {}ms", MAX, time_elapsed.as_millis());
 
     img.save("temp.bmp").unwrap();
 }
