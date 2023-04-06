@@ -64,7 +64,7 @@ fn main() {
 
     let time_elapsed = start_time.elapsed();
 
-    println!("Time taken: {}ms", time_elapsed.as_millis());
+    println!("Multi-thread:\n\tMax Samples: {}\n\tTime taken: {}ms", MAX, time_elapsed.as_millis());
 
     let img_lock = img.lock().unwrap();
 
