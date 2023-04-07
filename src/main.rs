@@ -1,12 +1,18 @@
 use image::{RgbImage, Rgb};
-use std::{time::Instant, thread, sync::{Arc, Mutex}};
+use std::{time::Instant, thread, sync::{Arc, Mutex}, borrow::Borrow, ops::Rem};
 
 fn main() {
-    const WIDTH: u32 = 800;
-    const HEIGHT: u32 = 800;
+    const WIDTH: u32 = 3840 * 2;
+    const HEIGHT: u32 = 3840 * 2;
     let img = Arc::new(Mutex::new(RgbImage::new(WIDTH, HEIGHT)));
     let pixel_todo: Arc<Mutex<(u32, u32)>> = Arc::new(Mutex::new((0, 0)));
-    const MAX: u32 = 10000;
+    const MAX: u32 = 2000;
+
+    let colors: Arc<Vec<(f64, f64, f64)>> = Arc::new(vec![
+        (255.0, 000.0, 255.0),
+        (255.0, 255.0, 000.0),
+        (255.0, 000.0, 000.0),
+    ]);
 
     let mut handles = vec![];
 
@@ -15,6 +21,7 @@ fn main() {
     for _ in 0..12 {
         let img = Arc::clone(& img);
         let pixel_todo = Arc::clone(&pixel_todo);
+        let colors = Arc::clone(&colors);
 
         let handle = thread::spawn(move || { 
             loop {
@@ -43,15 +50,10 @@ fn main() {
                     z = (z.0 * z.0 - z.1 * z.1 + c.0, 2.0 * z.0 * z.1 + c.1);
                 }
 
-                let mut img_lock = img.lock().unwrap();
+                //let mut img_lock = img.lock().unwrap();
 
-                if m == MAX {
-                    img_lock.put_pixel(x_y.0, x_y.1, Rgb([0, 0, 0]));
-                } else {
-                    let v: u32 = 16;
-                    let n: u8 = ((m % v) * 255 / v) as u8;
-                    img_lock.put_pixel(x_y.0, x_y.1, Rgb([n, n, n]));
-                }
+                put_color(Arc::clone(&img), m, MAX, &x_y, colors.borrow()); 
+
             }
         });
 
@@ -69,4 +71,24 @@ fn main() {
     let img_lock = img.lock().unwrap();
 
     img_lock.save("temp.bmp").unwrap();
+}
+
+fn put_color(img: Arc<Mutex<RgbImage>>, m: u32, max: u32, x_y: &(u32, u32), colors: &Vec<(f64, f64, f64)>) {
+    let v = (m as f64 / 10.0).rem(colors.len() as f64); 
+    let d = v.rem(1.0);
+
+    let c1 = colors.get(v as usize).unwrap();
+    let c2 = colors.get((v as usize + 1) % colors.len()).unwrap();
+
+    let mut img_lock = img.lock().unwrap();
+
+    if m == max {
+        img_lock.put_pixel(x_y.0, x_y.1, Rgb([0, 0, 0]));
+    } else {
+        img_lock.put_pixel(x_y.0, x_y.1, Rgb([
+                                             ((1.0 - d) * c1.0 + d * c2.0) as u8,
+                                             ((1.0 - d) * c1.1 + d * c2.1) as u8,
+                                             ((1.0 - d) * c1.2 + d * c2.2) as u8
+        ]));
+    }
 }
