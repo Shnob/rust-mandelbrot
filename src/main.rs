@@ -2,8 +2,8 @@ use image::{RgbImage, Rgb};
 use std::time::Instant;
 
 fn main() {
-    let mut img = RgbImage::new(800, 800);
-    const MAX: u32 = 1000;
+    let mut img = RgbImage::new(3840 * 2, 3840 * 2);
+    const MAX: u32 = 2000;
 
     let start_time = Instant::now();
 
