@@ -2,16 +2,17 @@ use image::{RgbImage, Rgb};
 use std::{time::Instant, thread, sync::{Arc, Mutex}, borrow::Borrow, ops::Rem};
 
 fn main() {
-    const WIDTH: u32 = 3840 * 2;
-    const HEIGHT: u32 = 3840 * 2;
+    const WIDTH: u32 = 3840 * 1;
+    const HEIGHT: u32 = 3840 * 1;
     let img = Arc::new(Mutex::new(RgbImage::new(WIDTH, HEIGHT)));
     let pixel_todo: Arc<Mutex<(u32, u32)>> = Arc::new(Mutex::new((0, 0)));
     const MAX: u32 = 2000;
 
     let colors: Arc<Vec<(f64, f64, f64)>> = Arc::new(vec![
-        (255.0, 000.0, 255.0),
-        (255.0, 255.0, 000.0),
-        (255.0, 000.0, 000.0),
+        (228.0, 023.0, 232.0),
+        (232.0, 123.0, 023.0),
+        (027.0, 232.0, 023.0),
+        (023.0, 132.0, 232.0),
     ]);
 
     let mut handles = vec![];
